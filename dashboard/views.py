@@ -152,64 +152,30 @@ def books(request):
     else:
         form = DashboardFom()
     context = {'form': form}
-    return render(request, "dashboard/books.html", context)
+    return render(request, 'dashboard/books.html', context)
 
+# books section goes here
 def books(request):
     form = DashboardFom()
     context = {'form':form}
-    return render(request, "dashboard/books.html",context)
+    return render(request, 'dashboard/books.html',context)
 
+# dictionary codes here
+def dictionary(request):
+    return render(request, 'dashboard/dictionary.html')
 
+# wikipedia here
+def wiki(request):
+    return render(request, 'dashboard/wiki.html')
 
-
+# conversion section
+def conversion(request):
+    return render(request, 'dashboard/conversion.html')
 
 
 # Toto section goes here
 def todo(request):
-    if request.method == 'POST':
-        form = TodoForm(request.POST)
-        if form.is_valid():
-            try:
-                finished = request.POST["is_finished"]
-                if finished == 'on':
-                    finished = True
-                else:
-                    finished = False
-            except:
-                finished = False
-            todos = Todo(
-                user=request.user,
-                title=request.POST['title'],
-                is_finished=finished
-            )
-            todos.save()
-            messages.success(
-                request, f"Todo Added from {request.user.username}")
-    else:
-        form = TodoForm()
-    todo = Todo.objects.filter(user=request.user)
-    if len(todo) == 0:
-        todos_done = True
-    else:
-        todos_done = False
-    context = {
-        'form': form,
-        'todo': todo,
-        'todos_done': todos_done
-    }
-    return render(request, "dashboard/todo.html", context)
-
-    def update_todo(request, pk=None):
-        todo = Todo.objects.get(id=pk)
-        if todo.is_finished == True:
-            todo.is_finished = False
-        else:
-            todo.is_finished = True
-        todo.save()
-        return redirect('todo')
-
-    def delete_todo(request, pk=None):
-        Todo.objects.get(id=pk).delete()
-        return redirect("todo")
+    return render(request, 'dashboard/todo.html')
+   
 
     
