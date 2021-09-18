@@ -5,8 +5,9 @@ from django.shortcuts import redirect, render
 from . forms import *
 from django.contrib import messages
 from django.views import generic
-from youtubesearchpython import VideosSearch
+from youtubesearchpython import VideosSearch, search
 import requests
+import wikipedia
 
 # Create your views here.
 
@@ -197,16 +198,58 @@ def books(request):
 
 # dictionary codes here
 def dictionary(request):
-    return render(request, 'dashboard/dictionary.html')
+    if request.method == "POST":
+        form = DashboardFom(request.POST)
+        text = request.POST['text']
+        url = "https://api.dictionaryapi.dev/api/v2/entries/en_US/"+text
+#        url = "https://www.googleapis.com/books/v1/volumes?q=isbn"
+        r = requests.get(url)
+        answer = r.json()
+        try:
+            phonetics = answer[0]['phonetics'][0]['text']
+            audio = answer[0]['phonetics'][0]['audio']
+            definition = answer[0]['meanings'][0]['definitions'][0]['definition']
+            example = answer[0]['meanings'][0]['definitions'][0]['example']
+            synonyms = answer[0]['meanings'][0]['definitions'][0]['synonyms']
+            context = {
+                'form':form,
+                'input':text,
+                'phonetics':phonetics,
+                'audio':audio,
+                'definition':definition,
+                'example':example,
+                'synonyms':synonyms
+            }
+        except:
+            context = {
+                'form':form,
+                'input':''
+            }
+        return render(request,"dashboard/dictionary.html",context)
+    else:
+        form = DashboardFom()
+        context = {'form':form}
+    return render(request,"dashboard/dictionary.html",context)
 
-# wikipedia here
-
-
+# wikipedia section
 def wiki(request):
-    return render(request, 'dashboard/wiki.html')
+    if request.method == 'POST':
+        text = request.POST['text']
+        form = DashboardFom(request.POST)
+        search = wikipedia.page(text)
+        context = {
+            'form':form,
+            'title':search.title,
+            'link':search.url,
+            'details':search.summary
+        }
+        return render(request,"dashboard/wiki.html",context)
+    else:
+        form = DashboardFom()
+        context = {
+            'form':form
+        }
+    return render(request,"dashboard/wiki.html",context)
 
 # conversion section
 
-
-def conversion(request):
-    return render(request, 'dashboard/conversion.html')

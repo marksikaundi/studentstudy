@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import fields
 from django.db.models.base import Model
 from django.forms import widgets
+from django.utils.regex_helper import Choice
 from . models import *
 
 class NotesForm(forms.ModelForm):
@@ -25,3 +26,4 @@ class TodoForm(forms.ModelForm):
     class Meta:
         Model = Todo
         fields = ['title','is_finished']
+
