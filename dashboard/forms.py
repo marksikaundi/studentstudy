@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import fields
+from django.db.models.base import Model
 from django.forms import widgets
 from . models import *
 
@@ -22,5 +23,5 @@ class DashboardFom(forms.Form):
 
 class TodoForm(forms.ModelForm):
     class Meta:
-        model = Todo
+        Model = Todo
         fields = ['title','is_finished']
