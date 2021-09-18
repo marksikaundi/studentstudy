@@ -1,3 +1,4 @@
+from django import contrib
 from django.core.checks import messages
 from django.forms.forms import Form
 from django.shortcuts import redirect, render
@@ -11,7 +12,7 @@ import requests
 
 
 def home(request):
-    return render(request,'dashboard/home.html')
+    return render(request, 'dashboard/home.html')
 
 
 def notes(request):
@@ -26,8 +27,8 @@ def notes(request):
     else:
         form = NotesForm()
     notes = Notes.objects.filter(user=request.user)
-    context = {'notes':notes,'form':form}
-    return render(request,'dashboard/notes.html',context)
+    context = {'notes': notes, 'form': form}
+    return render(request, 'dashboard/notes.html', context)
 
 
 def delete_note(request, pk=None):
@@ -69,12 +70,12 @@ def homework(request):
         homework_done = True
     else:
         homework_done = False
-    context = {'homeworks':homework,
-               'homework_done':homework_done,'form':form}
-    return render(request,'dashboard/homework.html',context)
+    context = {'homeworks': homework,
+               'homework_done': homework_done, 'form': form}
+    return render(request, 'dashboard/homework.html', context)
 
 
-def update_homework(request,pk=None):
+def update_homework(request, pk=None):
     homework = Homework.objects.get(id=pk)
     if homework.is_finished == True:
         homework.is_finished = False
@@ -84,7 +85,7 @@ def update_homework(request,pk=None):
     return redirect('homework')
 
 
-def delete_homework(request,pk=None):
+def delete_homework(request, pk=None):
     Homework.objects.get(id=pk).delete()
     return redirect("homework")
 
@@ -114,16 +115,18 @@ def youtube(request):
             result_dict['description'] = desc
             result_list.append(result_dict)
             context = {
-                'form':form,
-                'results':result_list
+                'form': form,
+                'results': result_list
             }
-        return render(request,'dashboard/youtube.html',context)
+        return render(request, 'dashboard/youtube.html', context)
     else:
         form = DashboardFom()
-    context = {'form':form}
-    return render(request,"dashboard/youtube.html",context)
+    context = {'form': form}
+    return render(request, "dashboard/youtube.html", context)
 
 # Todo's section goes here
+
+
 def todo(request):
     if request.method == 'POST':
         form = Todo(request.POST)
@@ -137,12 +140,13 @@ def todo(request):
             except:
                 finished = False
             todos = Todo(
-                user = request.user,
-                title = request.POST['title'],
-                is_finished = finished
+                user=request.user,
+                title=request.POST['title'],
+                is_finished=finished
             )
             todos.save()
-            messages.success(request,f"Todo Added from {request.user.username}")
+            messages.success(
+                request, f"Todo Added from {request.user.username}")
     else:
         form = Todo()
     todo = Todo.objects.filter(user=request.user)
@@ -151,19 +155,19 @@ def todo(request):
     else:
         todos_done = False
     context = {
-        'form':form,
-        'todos':todo,
-        'todo_done':todos_done
+        'form': form,
+        'todos': todo,
+        'todo_done': todos_done
     }
-    return render(request, "dashboard/todo.html",context)
+    return render(request, "dashboard/todo.html", context)
 
-
-# books APIS goes here
+# books search API
 def books(request):
     if request.method == "POST":
         form = DashboardFom(request.POST)
         text = request.POST['text']
         url = "https://www.googleapis.com/books/v1/volumes?q="+text
+#        url = "https://www.googleapis.com/books/v1/volumes?q=isbn"
         r = requests.get(url)
         answer = r.json()
         result_list = []
@@ -175,29 +179,23 @@ def books(request):
                 'count': answer['items'][i]['volumeInfo'].get('pageCount'),
                 'categories': answer['items'][i]['volumeInfo'].get('categories'),
                 'rating': answer['items'][i]['volumeInfo'].get('pageRating'),
-                'thumbnail': answer['items'][i]['volumeInfo'].get('imageLinks'),
+                'thumbnail': answer['items'][i]['volumeInfo'].get('imageLinks').get('thumbnail'),
                 'preview': answer['items'][i]['volumeInfo'].get('previewLink'),
+
             }
             result_list.append(result_dict)
             context = {
-                'form':form,
-                'result':result_list
+                'form': form,
+                'results': result_list
             }
-        return render(request,'dashboard/books.html',context)
+        return render(request, 'dashboard/books.html', context)
     else:
         form = DashboardFom()
-    context = {'form':form}
-    return render(request,'dashboard/books.html',context)
+    context = {'form': form}
+    return render(request, "dashboard/books.html", context)
 
-
-def books(request):
-    form = DashboardFom()
-    context = {'form':form}
-    return render(request,'dashboard/books.html',context)
 
 # dictionary codes here
-
-
 def dictionary(request):
     return render(request, 'dashboard/dictionary.html')
 
