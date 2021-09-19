@@ -4,6 +4,7 @@ from django.db.models.base import Model
 from django.forms import widgets
 from django.utils.regex_helper import Choice
 from . models import *
+from django.contrib.auth.forms import UserCreationForm
 
 class NotesForm(forms.ModelForm):
     class Meta:
@@ -27,3 +28,7 @@ class TodoForm(forms.ModelForm):
         Model = Todo
         fields = ['title','is_finished']
 
+class UserRegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username','password1','password2']

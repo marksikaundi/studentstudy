@@ -163,6 +163,8 @@ def todo(request):
     return render(request, "dashboard/todo.html", context)
 
 # books search API
+
+
 def books(request):
     if request.method == "POST":
         form = DashboardFom(request.POST)
@@ -212,44 +214,84 @@ def dictionary(request):
             example = answer[0]['meanings'][0]['definitions'][0]['example']
             synonyms = answer[0]['meanings'][0]['definitions'][0]['synonyms']
             context = {
-                'form':form,
-                'input':text,
-                'phonetics':phonetics,
-                'audio':audio,
-                'definition':definition,
-                'example':example,
-                'synonyms':synonyms
+                'form': form,
+                'input': text,
+                'phonetics': phonetics,
+                'audio': audio,
+                'definition': definition,
+                'example': example,
+                'synonyms': synonyms
             }
         except:
             context = {
-                'form':form,
-                'input':''
+                'form': form,
+                'input': ''
             }
-        return render(request,"dashboard/dictionary.html",context)
+        return render(request, "dashboard/dictionary.html", context)
     else:
         form = DashboardFom()
-        context = {'form':form}
-    return render(request,"dashboard/dictionary.html",context)
+        context = {'form': form}
+    return render(request, "dashboard/dictionary.html", context)
 
 # wikipedia section
+
+
 def wiki(request):
     if request.method == 'POST':
         text = request.POST['text']
         form = DashboardFom(request.POST)
         search = wikipedia.page(text)
         context = {
-            'form':form,
-            'title':search.title,
-            'link':search.url,
-            'details':search.summary
+            'form': form,
+            'title': search.title,
+            'link': search.url,
+            'details': search.summary
         }
-        return render(request,"dashboard/wiki.html",context)
+        return render(request, "dashboard/wiki.html", context)
     else:
         form = DashboardFom()
         context = {
-            'form':form
+            'form': form
         }
-    return render(request,"dashboard/wiki.html",context)
+    return render(request, "dashboard/wiki.html", context)
 
-# conversion section
+# User Auth Registration form section
 
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(
+                request, f"Account created successfully for {username}!!")
+            return redirect("login")
+    else:
+        form = UserRegistrationForm()
+    context = {
+        'form': form
+    }
+    return render(request, "dashboard/register.html", context)
+
+# Profile section to desplay home part
+
+
+def profile(request):
+    homeworks = Homework.objects.filter(is_finished=False,user=request.user)
+    todos = Todo.objects.filter(is_finished=False,user=request.user)
+    if len(homeworks) == 0:
+        homework_done = True
+    else:
+        homework_done = False
+    if len(todos) == 0:
+        todos_done = True
+    else:
+        todos_done = False
+    context = {
+        'homework':homework,
+        'todos':todos,
+        'homework_done':homework_done,
+        'todos_done':todos_done,
+    }
+    return render(request, "dashboard/profile.html",context)
