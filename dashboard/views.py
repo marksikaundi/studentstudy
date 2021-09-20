@@ -256,8 +256,6 @@ def wiki(request):
     return render(request, "dashboard/wiki.html", context)
 
 # User Auth Registration form section
-
-
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
